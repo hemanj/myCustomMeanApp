@@ -4,9 +4,9 @@ var express = require('express');
 var app = express();
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
-var serviceCntrlModel = require('./model/model');
+var todoCntrlModel = require('./model/model');
 
-mongoose.connect('mongodb://localhost/serviceList',function(err,res){
+mongoose.connect('mongodb://localhost/todoList',function(err,res){
 	if(err){
 		console.log('Error connnecting mongodb: '+err);
 	}else{
@@ -17,15 +17,15 @@ mongoose.connect('mongodb://localhost/serviceList',function(err,res){
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 
-app.get('/serviceClients', function (req, res) {
+app.get('/todos', function (req, res) {
 	console.log('I received a GET request');
-	serviceCntrlModel.find({}).sort({completed:1,updatedAt: 'descending'}).exec(function(err,results){
+	todoCntrlModel.find({}).sort({completed:1,updatedAt: 'descending'}).exec(function(err,results){
 		res.json(results);
 	});
 });
 
-app.post('/serviceClients', function (req, res) {
-	var serviceCntrl = new serviceCntrlModel(req.body);
+app.post('/todos', function (req, res) {
+	var serviceCntrl = new todoCntrlModel(req.body);
 	serviceCntrl.save(function(err,result){
 		if(err){
 			return res.send(500, err);
@@ -35,8 +35,8 @@ app.post('/serviceClients', function (req, res) {
 	});
 });
 
-app.delete('/serviceClients/:id', function (req, res) {
-	serviceCntrlModel.remove({_id : req.params.id}, function(err, doc){
+app.delete('/todos/:id', function (req, res) {
+	todoCntrlModel.remove({_id : req.params.id}, function(err, doc){
 		if(err){
 			throw err;
 		}		
@@ -44,14 +44,14 @@ app.delete('/serviceClients/:id', function (req, res) {
 	});
 });
 
-app.get('/serviceClients/:id', function (req, res) {
-	serviceCntrlModel.findOne({_id : req.params.id},function(err,results){
+app.get('/todos/:id', function (req, res) {
+	todoCntrlModel.findOne({_id : req.params.id},function(err,results){
 		res.json(results);
 	});
 });
 
-app.put('/serviceClients/:id', function (req, res) {
-	serviceCntrlModel.findById(req.params.id, function(err, doc){
+app.put('/todos/:id', function (req, res) {
+	todoCntrlModel.findById(req.params.id, function(err, doc){
 		if(err){
 			throw err;
 		}		

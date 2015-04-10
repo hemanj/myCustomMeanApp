@@ -1,5 +1,5 @@
 <!DOCTYPE>
-<html ng-app="serviceApp">
+<html ng-app="todoApp">
 <head>
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
@@ -11,20 +11,19 @@
   <title>ToDo List App</title>
 </head>
 <body>
-	<div class="container" ng-controller="serviceController">
+	<div class="container" ng-controller="todoController">
  		<h1>ToDo List</h1>
-		<div class="alert alert-danger" role="alert" ng-show="CustomErrorMsg">You Should Update On Click Of Edit Button</div>
     	<table class="table effect5">
 	      <tbody>
 	        <tr>
-	          <td><input class="form-control" ng-model="serviceClientField.name" placeholder="What needs to be done?" ng-keypress="($event.which === 13)?addService():0" autofocus></td>
+	          <td><input class="form-control" ng-model="todoAddField.name" placeholder="What needs to be done?" ng-keypress="($event.which === 13)?addService():0" autofocus></td>
 	          <td ng-init="isDisabled = false">
 	          	<button class="btn btn-primary" ng-disabled="isDisabled" ng-click="addService()">Add ToDo</button>
 	          </td>
 	        </tr>
-	        <tr ng-repeat="serviceClient in model.serviceClients | filter:statusFilter track by $index"" ng-include="getTemplate(serviceClient)" id="labelName"></tr>
+	        <tr ng-repeat="todo in model.todos | filter:statusFilter track by $index"" ng-include="getTemplate(todo)" id="labelName"></tr>
 	      </tbody>
-    	  <tfoot id="footer" ng-show="model.serviceClients.length">
+    	  <tfoot id="footer" ng-show="model.todos.length">
 		    <tr id="filters">
 		      <td>
 		        <a ng-class="{selected: status == ''} " href="#">All</a>
@@ -38,12 +37,12 @@
     
         <script type="text/ng-template" id="display">
         	<td class="labelRow">
-				<input class="toggle" ng-model="serviceClient.completed" type="checkbox" ng-change="updateToDoState(serviceClient._id,$index)">
-				<label class="ng-binding" ng-dblclick="edit(serviceClient._id)" ng-class="{strike: serviceClient.completed}" data-toggle="tooltip" data-placement="left"
-        title="Double click to edit">{{serviceClient.name}}</label>
+				<input class="toggle" ng-model="todo.completed" type="checkbox" ng-change="updateToDoState(todo._id,$index)">
+				<label class="ng-binding" ng-dblclick="edit(todo._id)" ng-class="{strike: todo.completed}" data-toggle="tooltip" data-placement="left"
+        title="Double click to edit">{{todo.name}}</label>
 			</td>
           	<td class="removeBtn">
-				<button class="destroy" ng-click="remove(serviceClient._id)"></button>
+				<button class="destroy" ng-click="remove(todo._id)"></button>
           	</td>
    	 	</script>
         <script type="text/ng-template" id="edit">

@@ -1,17 +1,16 @@
-var myApp = angular.module('serviceApp', []);
-myApp.controller('serviceController', ['$scope', '$http','$location', function($scope, $http, $location) {
+var myApp = angular.module('todoApp', []);
+myApp.controller('todoController', ['$scope', '$http','$location', function($scope, $http, $location) {
 
 $scope.model = {
-		serviceClients: [{}],
+		todos: [{}],
 		selected: {},
 		statusFilter:''
 };
 
 var refresh = function() {
-	$http.get('/serviceClients').success(function(response) {
-		$scope.model.serviceClients = response;
-		$scope.serviceClientField = "";
-		$scope.CustomErrorMsg = false;
+	$http.get('/todos').success(function(response) {
+		$scope.model.todos = response;
+		$scope.todoAddField = "";
 		$scope.isDisabled = false;
 	});
 };
@@ -19,39 +18,38 @@ var refresh = function() {
 refresh();
 
 $scope.addService = function() {
-	console.log("Post value is" + JSON.stringify($scope.serviceClientField));
-	$http.post('/serviceClients', $scope.serviceClientField).success(function(response) {
+	console.log("Post value is" + JSON.stringify($scope.todoAddField));
+	$http.post('/todos', $scope.todoAddField).success(function(response) {
 		refresh();
 	}).
 	error(function(data, status, headers, config) {
 		console.log("Failed to post");
-		$scope.CustomErrorMsg = true;
 	});
 };
 
 $scope.remove = function(id) {
-	$http.delete('/serviceClients/' + id).success(function(response) {
+	$http.delete('/todos/' + id).success(function(response) {
 		refresh();
 	});
 };
 
 $scope.edit = function(id) {
 	$scope.isDisabled = true;
-	$http.get('/serviceClients/' + id).success(function(response) {
+	$http.get('/todos/' + id).success(function(response) {
 		$scope.model.selected = angular.copy(response);
 	});
 };  
 
 $scope.update = function(idx) {
-	$scope.model.serviceClients[idx] = angular.copy($scope.model.selected);
-	$http.put('/serviceClients/' + $scope.model.serviceClients[idx]._id, $scope.model.serviceClients[idx]).success(function(response) {
+	$scope.model.todos[idx] = angular.copy($scope.model.selected);
+	$http.put('/todos/' + $scope.model.todos[idx]._id, $scope.model.todos[idx]).success(function(response) {
 		refresh();
 		$scope.reset();
   });
 };
 
 $scope.deselect = function() {
-  $scope.serviceClientField = "";
+  $scope.todoAddField = "";
 };
 
 $scope.getTemplate = function (contact) {
@@ -69,7 +67,7 @@ $scope.reset = function () {
 };
 
 $scope.updateToDoState = function(id,idx) {
-	$http.put('/serviceClients/'+id, $scope.model.serviceClients[idx]).success(function(response) {
+	$http.put('/todos/'+id, $scope.model.todos[idx]).success(function(response) {
 		refresh();
 		$scope.reset();
 	});	
@@ -82,13 +80,13 @@ $scope.$on('$locationChangeSuccess', function () {
 
 $scope.clearCompletedTodos = function () {
     var remainingTodos = [];
-    angular.forEach($scope.model.serviceClients, function (todo) {
+    angular.forEach($scope.model.todos, function (todo) {
         if (todo.completed) {
         	$scope.remove(todo._id);
         } else {
             remainingTodos.push(todo);
         }
     });
-    $scope.model.serviceClients = remainingTodos;
+    $scope.model.todos = remainingTodos;
 };
 }]);

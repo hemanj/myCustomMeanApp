@@ -1,13 +1,13 @@
 var mongoose = require('mongoose');
 
-var serviceControllerSchema = mongoose.Schema({
+var todoControllerSchema = mongoose.Schema({
 	name: {type: String, index: {unique: true}},
 	completed: { type: Boolean, default: false },
 	createdAt: Date,  
 	updatedAt: Date
 });
 
-serviceControllerSchema.pre('save', function(next, done){
+todoControllerSchema.pre('save', function(next, done){
 	  if (this.isNew) {
 	    this.createdAt = Date.now();
 	  }
@@ -15,5 +15,5 @@ serviceControllerSchema.pre('save', function(next, done){
 	  next();
 });
 
-var serviceCntrlModel = mongoose.model('serviceCntrl',serviceControllerSchema);
-module.exports = serviceCntrlModel;
+var todoCntrlModel = mongoose.model('todoCntrl',todoControllerSchema);
+module.exports = todoCntrlModel;
