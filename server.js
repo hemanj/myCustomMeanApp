@@ -18,7 +18,6 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 
 app.get('/todos', function (req, res) {
-	console.log('I received a GET request');
 	todoCntrlModel.find({}).sort({completed:1,updatedAt: 'descending'}).exec(function(err,results){
 		res.json(results);
 	});
@@ -31,7 +30,6 @@ app.post('/todos', function (req, res) {
 			return res.send(500, err);
 		}	
 		res.json(result);
-		console.log("post value is "+JSON.stringify(result));
 	});
 });
 
@@ -46,12 +44,12 @@ app.delete('/todos/:id', function (req, res) {
 
 app.get('/todos/:id', function (req, res) {
 	todoCntrlModel.findOne({_id : req.params.id},function(err,results){
-		res.json(results);
+		res.json(results);	
 	});
 });
 
 app.put('/todos/:id', function (req, res) {
-	todoCntrlModel.findById(req.params.id, function(err, doc){
+	todoCntrlModel.findById(req.params.id, function(err, doc, next){
 		if(err){
 			throw err;
 		}		
@@ -69,10 +67,11 @@ app.put('/todos/:id', function (req, res) {
 				throw err;
 			}
 			res.json(doc);
-			console.log("put value is "+JSON.stringify(doc));
 		});		
 	});
 });
 
 app.listen(3000);
 console.log("Server running on port 3000");
+
+module.exports = app;
