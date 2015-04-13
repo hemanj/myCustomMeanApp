@@ -1,4 +1,6 @@
 var myApp = angular.module('todoApp', []);
+var socket = io.connect("http://localhost:3000");
+
 myApp.controller('todoController', ['$scope', '$http','$location', function($scope, $http, $location) {
 
 $scope.model = {
@@ -6,6 +8,10 @@ $scope.model = {
 		selected: {},
 		statusFilter:''
 };
+
+socket.on('socketEvent', function(socket){
+	refresh();
+});
 
 var refresh = function() {
 	$http.get('/todos').success(function(response) {
@@ -18,7 +24,6 @@ var refresh = function() {
 refresh();
 
 $scope.addService = function() {
-	console.log("Post value is" + JSON.stringify($scope.todoAddField));
 	$http.post('/todos', $scope.todoAddField).success(function(response) {
 		refresh();
 	}).

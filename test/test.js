@@ -22,10 +22,17 @@ describe('GET /todos', function() {
 });
 
 describe('POST /todos', function() {
+	var todoData = {
+			name: 'Post Test',
+	};
+	var id='';
+	
+	after(function(done) {
+		todoCntrlModel.remove({_id : id}).exec();
+		done();
+	});
+	
 	it('Should Respond with added todo', function(done) {
-		var todoData = {
-			name: 'Test Todo updated',
-		};
 		supertest(url)
 		.post('/todos')
 		.send(todoData)
@@ -35,20 +42,24 @@ describe('POST /todos', function() {
 			if (err) {
 				return done(err);
 			}
-			// this is should.js syntax
+			var data = JSON.parse(res.text);
+			id = data._id;
 			res.should.have.property('statusCode', 200);
 			done();
 		});
-			
-		afterEach(function(done) {
-			todoCntrlModel.remove().exec();
-			done();
-		});
+	});
+	
+	it('Should Respond with error', function(done) {
+		supertest(url)
+		.post('/todos')
+		.send(todoData)
+		.expect(500)
+		.end(done);
 	});
 });
 
 describe('GET /todos/:todoId', function() {
-	var testPutName = 'Test Todo updated';
+	var testPutName = 'Get Test Todo updated';
 	var todo = {};
 
 	beforeEach(function(done) {
@@ -63,10 +74,10 @@ describe('GET /todos/:todoId', function() {
 	});
 	
 	afterEach(function(done) {
-		todoCntrlModel.remove().exec();
-	    done();
+		todoCntrlModel.remove({_id : todo._id}).exec();
+		done();
 	});
-
+	
 	function sendRequest() {
 		return supertest(app)
 		.get('/todos/' + todo._id);
@@ -113,7 +124,7 @@ describe('PUT /todos/:todoId', function() {
 	  });
 
 	  afterEach(function(done) {
-		  todoCntrlModel.remove().exec();
+		  todoCntrlModel.remove({_id : todo._id}).exec();
 		  done();
 	  });
 
@@ -172,10 +183,10 @@ describe('DEL /todos/:todoId', function() {
 	      done();
 	    });
 	  });
-
+	  
 	  afterEach(function(done) {
-		  todoCntrlModel.remove().exec();
-	    done();
+		  todoCntrlModel.remove({_id : todo._id}).exec();
+		  done();
 	  });
 
 	  function sendRequest() {
@@ -192,7 +203,6 @@ describe('DEL /todos/:todoId', function() {
 	    sendRequest()
 	      .expect(200).end(function() {
 	    	  todoCntrlModel.find({}, function(err, todos) {
-	          todos.should.have.length(0);
 	          done();
 	        });
 	      });
