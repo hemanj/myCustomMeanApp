@@ -21,7 +21,7 @@
 	          	<button class="btn btn-primary" ng-disabled="isDisabled" ng-click="addService()">Add ToDo</button>
 	          </td>
 	        </tr>
-	        <tr ng-repeat="todo in model.todos | filter:statusFilter track by $index"" ng-include="getTemplate(todo)" id="labelName"></tr>
+	        <tr ng-repeat="todo in model.todos | filter:statusFilter track by $index" ng-include="getTemplate(todo)" id="labelName"></tr>
 	      </tbody>
     	  <tfoot id="footer" ng-show="model.todos.length">
 		    <tr id="filters">
