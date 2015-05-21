@@ -1,16 +1,21 @@
-var express = require('express');
-var app = express();
-var mongoose = require('mongoose');
-var bodyParser = require('body-parser');
-var todoCntrlModel = require('./model/model');
-var server = require('http').Server(app);
-var io = require('socket.io').listen(server);
+var express = require('express'),
+	app = express(),
+	mongoose = require('mongoose'),
+	bodyParser = require('body-parser'),
+	todoCntrlModel = require('./model/model'),
+	server = require('http').Server(app),
+	io = require('socket.io').listen(server),
+	bunyan = require('bunyan'),
+	bformat = require('bunyan-format'), 
+	formatOut = bformat({ outputMode: 'short' });
+
+var log = bunyan.createLogger({ name: 'myMeanApp', stream: formatOut, level: 'debug' } );
 
 mongoose.connect('mongodb://localhost/todoList',function(err,res){
 	if(err){
-		console.log('Error connnecting mongodb: '+err);
+		log.error(err, new Error('mongodb connection'));
 	}else{
-		console.log('Connected to mongodb');
+		log.info('Connected to mongodb');
 	}
 });
 
@@ -41,6 +46,7 @@ io.on('connection', function (socket) {
 				return res.send(500, err);
 			}
 			eventEmitter();
+			log.info('Todo is created Sucessfully');
 			res.send(result);
 		});
 	});
@@ -51,6 +57,7 @@ io.on('connection', function (socket) {
 				throw err;
 			}
 			eventEmitter();
+			log.info('Todo is deleted Successfully');
 			res.json(doc);
 		});
 	});
@@ -59,8 +66,7 @@ io.on('connection', function (socket) {
 		todoCntrlModel.findById(req.params.id, function(err, doc, next){
 			if(err){
 				throw err;
-			}		
-			//console.log(doc);
+			}
 			if(req.body.name !== doc.name) {
 				doc.name = req.body.name;
 				doc.completed = false;
@@ -71,9 +77,10 @@ io.on('connection', function (socket) {
 			}
 			doc.save(function(err){
 				if(err){
-					throw err;
+					log.error(err, new Error('REST Service'));
 				}
 				eventEmitter();
+				log.info('Todo is modified Successfully');
 				res.json(doc);
 			});		
 		});
@@ -81,6 +88,6 @@ io.on('connection', function (socket) {
 });
 
 server.listen(3000);
-console.log("Server running on port 3000");
+log.info("Server running on port 3000");
 
 module.exports = app;
