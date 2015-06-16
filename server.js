@@ -19,6 +19,7 @@ mongoose.connect('mongodb://localhost/todoList',function(err,res){
 	}
 });
 
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 
@@ -43,10 +44,10 @@ io.on('connection', function (socket) {
 		var serviceCntrl = new todoCntrlModel(req.body);
 		serviceCntrl.save(function(err,result){
 			if(err){
-				return res.send(500, err);
+				return res.status(500).send(err);
 			}
-			eventEmitter();
 			log.info('Todo is created Sucessfully');
+			eventEmitter();
 			res.send(result);
 		});
 	});
@@ -56,8 +57,8 @@ io.on('connection', function (socket) {
 			if(err){
 				throw err;
 			}
-			eventEmitter();
 			log.info('Todo is deleted Successfully');
+			eventEmitter();
 			res.json(doc);
 		});
 	});
@@ -79,8 +80,8 @@ io.on('connection', function (socket) {
 				if(err){
 					log.error(err, new Error('REST Service'));
 				}
-				eventEmitter();
 				log.info('Todo is modified Successfully');
+				eventEmitter();
 				res.json(doc);
 			});		
 		});
